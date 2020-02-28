@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace CodeSnippets
 {
-        internal class ApiClient : IApiClient
+    internal class ApiClient : IApiClient
     {
         public Task DeleteAsync(string uri, IDictionary<string, string> headers, CancellationToken cancellationToken)
         {
@@ -47,9 +47,9 @@ namespace CodeSnippets
             return SendAsync(HttpMethod.Put, uri, headers, payload, cancellationToken);
         }
 
-        public Task<T> PutAsync<T>(string uri, IDictionary<string, string> headers, string payload, CancellationToken cancellationToken)
+        public async Task<T> PutAsync<T>(string uri, IDictionary<string, string> headers, string payload, CancellationToken cancellationToken)
         {
-            var response = SendAsync(HttpMethod.Put, uri, headers, payload, cancellationToken);
+            var response = await SendAsync(HttpMethod.Put, uri, headers, payload, cancellationToken);
             return JsonConvert.DeserializeObject<T>(response);
         }
 
