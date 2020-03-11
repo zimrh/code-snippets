@@ -9,28 +9,52 @@ namespace CodeSnippets
 {
     internal class ApiClient : IApiClient
     {
-        public Task<T> DeleteAsync<T>(string uri, IDictionary<string, string> headers, CancellationToken cancellationToken = default)
+        public Task DeleteAsync(string uri, IDictionary<string, string> headers, CancellationToken cancellationToken)
         {
-            return SendAsync<T>(HttpMethod.Delete, uri, headers, null, cancellationToken);
+            return SendAsync(HttpMethod.Delete, uri, headers, null, cancellationToken);
         }
 
-        public Task<T> GetAsync<T>(string uri, IDictionary<string, string> headers, CancellationToken cancellationToken = default)
+        public async Task<T> DeleteAsync<T>(string uri, IDictionary<string, string> headers, CancellationToken cancellationToken)
         {
-            return SendAsync<T>(HttpMethod.Get, uri, headers, null, cancellationToken);
+            var response = await SendAsync(HttpMethod.Delete, uri, headers, null, cancellationToken);
+            return JsonConvert.DeserializeObject<T>(response);
         }
 
-        public Task<T> PostAsync<T>(string uri, IDictionary<string, string> headers, string payload, CancellationToken cancellationToken = default)
+        public Task GetAsync(string uri, IDictionary<string, string> headers, CancellationToken cancellationToken)
         {
-            return SendAsync<T>(HttpMethod.Post, uri, headers, payload, cancellationToken);
+            return SendAsync(HttpMethod.Get, uri, headers, null, cancellationToken);
         }
 
-        public Task<T> PutAsync<T>(string uri, IDictionary<string, string> headers, string payload, CancellationToken cancellationToken = default)
+        public async Task<T> GetAsync<T>(string uri, IDictionary<string, string> headers, CancellationToken cancellationToken)
         {
-            return SendAsync<T>(HttpMethod.Put, uri, headers, payload, cancellationToken);
+            var response = await  SendAsync(HttpMethod.Get, uri, headers, null, cancellationToken);
+            return JsonConvert.DeserializeObject<T>(response);
         }
 
-        private async Task<T> SendAsync<T>(HttpMethod method, string uri, IDictionary<string, string> headers,
-            string payload, CancellationToken cancellationToken = default)
+        public Task PostAsync(string uri, IDictionary<string, string> headers, string payload, CancellationToken cancellationToken)
+        {
+            return SendAsync(HttpMethod.Post, uri, headers, payload, cancellationToken);
+        }
+
+        public async Task<T> PostAsync<T>(string uri, IDictionary<string, string> headers, string payload, CancellationToken cancellationToken)
+        {
+            var response = await SendAsync(HttpMethod.Post, uri, headers, payload, cancellationToken);
+            return JsonConvert.DeserializeObject<T>(response);
+        }
+
+        public Task PutAsync(string uri, IDictionary<string, string> headers, string payload, CancellationToken cancellationToken)
+        {
+            return SendAsync(HttpMethod.Put, uri, headers, payload, cancellationToken);
+        }
+
+        public async Task<T> PutAsync<T>(string uri, IDictionary<string, string> headers, string payload, CancellationToken cancellationToken)
+        {
+            var response = await SendAsync(HttpMethod.Put, uri, headers, payload, cancellationToken);
+            return JsonConvert.DeserializeObject<T>(response);
+        }
+
+        private async Task<string> SendAsync(HttpMethod method, string uri, IDictionary<string, string> headers,
+            string payload, CancellationToken cancellationToken)
         {
             using (var httpRequestMessage = new HttpRequestMessage(method, uri))
             {
@@ -55,7 +79,7 @@ namespace CodeSnippets
                         throw new HttpRequestException($"Issue when calling {method} {uri}, received {response.StatusCode} {responseContent}");
                     }
 
-                    return JsonConvert.DeserializeObject<T>(responseContent);
+                    return responseContent;
                 }
             }
         }
